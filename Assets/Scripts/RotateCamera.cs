@@ -21,22 +21,21 @@ public class CameraOrbit : MonoBehaviour
 
     void LateUpdate()
     {
+        if (PauseManager.IsPaused) return;
+
         if (target == null)
             return;
 
-        // Acumular rotación
         yaw += lookInput.x * rotationSpeed * Time.deltaTime;
         pitch -= lookInput.y * rotationSpeed * Time.deltaTime;
         pitch = Mathf.Clamp(pitch, -80f, 80f);
 
-        // Calcular rotación
         Quaternion rotation = Quaternion.Euler(pitch, yaw, 0);
         Vector3 offset = rotation * new Vector3(0, 0, -distance);
 
         transform.position = target.position + offset;
         transform.LookAt(target);
 
-        // 🔥 Hacer que el jugador mire hacia la dirección de la cámara
         Vector3 forward = transform.forward;
         forward.y = 0;
         player.forward = forward;
