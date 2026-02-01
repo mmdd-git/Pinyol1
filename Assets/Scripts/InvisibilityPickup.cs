@@ -13,5 +13,6 @@ public class InvisibilityPickup : MonoBehaviour
             player.MakeInvisible(invisDuration);
            // Destroy(gameObject);
         }
+        gameObject.SetActive(false);
     }
 }

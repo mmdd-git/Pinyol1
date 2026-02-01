@@ -22,11 +22,19 @@ public class CubeMover : MonoBehaviour
     {
         if (PauseManager.IsPaused) return;
 
+        Move();
+
         if (!isFloating)
         {
-            Move();
             Jump();
         }
+
+        if (isGravityInverted && !IsGrounded())
+        {
+            rb.AddForce(Vector3.up * 9.81f, ForceMode.Acceleration);
+        }
+
+
     }
 
 
@@ -46,7 +54,7 @@ public class CubeMover : MonoBehaviour
         Vector3 forward = cameraTransform.forward;
         Vector3 right = cameraTransform.right;
 
-        // Evitar inclinació
+        // Eliminar componente vertical para evitar saltitos
         forward.y = 0;
         right.y = 0;
 
@@ -71,7 +79,8 @@ public class CubeMover : MonoBehaviour
     {
         if (jumpPressed && IsGrounded())
         {
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            Vector3 jumpDir = isGravityInverted ? Vector3.down : Vector3.up;
+            rb.AddForce(jumpDir * jumpForce, ForceMode.Impulse);
         }
 
         jumpPressed = false;
@@ -79,7 +88,11 @@ public class CubeMover : MonoBehaviour
 
     private bool IsGrounded()
     {
-        return Physics.Raycast(transform.position, Vector3.down, 1.1f);
+        Vector3 origin = transform.position + Vector3.up * 0.1f; // evita colisiones internas
+        float distance = 1.2f; // un poco más largo
+        Vector3 rayDir = isGravityInverted ? Vector3.up : Vector3.down;
+
+        return Physics.Raycast(origin, rayDir, distance);
     }
 
     public void MakeInvisible(float duration)
@@ -112,7 +125,7 @@ public class CubeMover : MonoBehaviour
         isFloating = true;
         rb.useGravity = false;
 
-        float targetHeight = transform.position.y + 1f; // altura donde flotará
+        float targetHeight = transform.position.y + 2f; // altura donde flotará
         float timer = 0f;
 
         while (timer < duration)
@@ -123,10 +136,10 @@ public class CubeMover : MonoBehaviour
             float difference = targetHeight - currentY;
 
             // Fuerza proporcional (como un muelle suave)
-            float floatForce = difference * 8f;
+            float floatForce = difference * 3f;
 
             // Limitar fuerza para evitar explosiones
-            floatForce = Mathf.Clamp(floatForce, -10f, 10f);
+            floatForce = Mathf.Clamp(floatForce, -5f, 5f);
 
             rb.AddForce(Vector3.up * floatForce, ForceMode.Acceleration);
 
@@ -168,5 +181,21 @@ public class CubeMover : MonoBehaviour
 
         if (speedParticles != null)
             speedParticles.Stop();
+    }
+
+    private bool isGravityInverted = false;
+
+    public void ToggleGravity()
+    {
+        isGravityInverted = !isGravityInverted;
+
+        if (isGravityInverted)
+        {
+            rb.useGravity = false; // apagamos la gravedad normal
+        }
+        else
+        {
+            rb.useGravity = true; // volvemos a la normalidad
+        }
     }
 }

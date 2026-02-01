@@ -14,5 +14,6 @@ public class Speed : MonoBehaviour
             player.StartSpeedBoost(duration, speedMultiplier);
            // Destroy(gameObject); // opcional
         }
+        gameObject.SetActive(false);
     }
 }

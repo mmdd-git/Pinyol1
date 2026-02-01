@@ -13,5 +13,7 @@ public class Float : MonoBehaviour
             player.StartFloating(floatDuration);
            // Destroy(gameObject); // opcional
         }
+
+        //gameObject.SetActive(false);
     }
 }

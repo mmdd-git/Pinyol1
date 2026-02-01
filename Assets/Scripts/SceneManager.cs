@@ -17,9 +17,4 @@ public class SceneLoader : MonoBehaviour
             Debug.LogWarning("No next scene found in Build Settings.");
         }
     }
-
-    public void Pause()
-    {
-        
-    }
 }
